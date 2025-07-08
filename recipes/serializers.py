@@ -18,10 +18,10 @@ class RecipeSerializer(serializers.Serializer):
     preparation = serializers.SerializerMethodField()
     category = serializers.PrimaryKeyRelatedField(
         queryset = Category.objects.all(),
-    ) # pegar uma Forenkey do nosso models, retorna o id = precisamos informar a queryset
+    )
     category_name = serializers.StringRelatedField(
         source='category',
-    ) # pegar uma Forenkey do nosso models ,retorna a string = precisamos informar a source
+    )
     author = serializers.PrimaryKeyRelatedField(
         queryset= User.objects.all(),
     )
@@ -32,7 +32,13 @@ class RecipeSerializer(serializers.Serializer):
     tag_objects = TagSerializers(
         many=True,
         source='tags',
-    ) # tranformar os dados da nossa tags em objetos = Já que tem varios dados
+    )
+    tag_links = serializers.HyperlinkedRelatedField(
+        many=True,
+        source='tags',
+        queryset=Tag.objects.all(),
+        view_name = 'recipes:recipes_api_v2_tag'   
+    ) # Adicionando links nos nosso dados = precisamos informar o view_name, que vem da url da onde queremos pegar os dados
 
 
     def get_preparation(self, recipe):
