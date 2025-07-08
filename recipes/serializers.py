@@ -1,44 +1,47 @@
-from rest_framework import serializers # importando o serializers
-from recipes.models import Category # importando meu models Category de recipes
-from django.contrib.auth.models import User # importando models User do Django
-from tag.models import Tag # importando meu models de Tag da minhas tags
+from rest_framework import serializers
+from recipes.models import Category
+from django.contrib.auth.models import User 
+from tag.models import Tag 
+from .models import Recipe
 
 
-class TagSerializers(serializers.Serializer):
-    id = serializers.IntegerField()
-    name = serializers.CharField(max_length=165)
-    slug = serializers.SlugField() 
+class TagSerializers(serializers.ModelSerializer):
+    # criamos uma meta class
+    class Meta:
+        model = Tag # precisamos informar o models
+        fields = ['id', 'name', 'slug',] # precisamos informar o campos que queremos - podemos usar o __all__ - pegar todos os dados do nosso model, sem dizer o campo. Mais não é recomendavel pois pode vazar dados.
 
 
-class RecipeSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    title = serializers.CharField(max_length=65)
-    description = serializers.CharField(max_length=165)
-    public = serializers.BooleanField(source='is_published')
-    preparation = serializers.SerializerMethodField()
+class RecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ['id', 'title', 'description', 'public', 'author', 'category', 'tags', 'preparation', 'category_name', 'tag_objects', 'tag_links',]
+
+    public = serializers.BooleanField(
+        source='is_published',
+        read_only=True, # informar que o campo e somente de leitura
+    )
+    preparation = serializers.SerializerMethodField(
+        read_only=True,
+    )
     category = serializers.PrimaryKeyRelatedField(
-        queryset = Category.objects.all(),
+        read_only=True,
     )
     category_name = serializers.StringRelatedField(
         source='category',
-    )
-    author = serializers.PrimaryKeyRelatedField(
-        queryset= User.objects.all(),
-    )
-    tags = serializers.PrimaryKeyRelatedField(
-        queryset= Tag.objects.all(),
-        many=True,
+        read_only=True,
     )
     tag_objects = TagSerializers(
         many=True,
         source='tags',
+        read_only=True,
     )
     tag_links = serializers.HyperlinkedRelatedField(
         many=True,
         source='tags',
-        queryset=Tag.objects.all(),
-        view_name = 'recipes:recipes_api_v2_tag'   
-    ) # Adicionando links nos nosso dados = precisamos informar o view_name, que vem da url da onde queremos pegar os dados
+        view_name = 'recipes:recipes_api_v2_tag',
+        read_only=True,  
+    ) 
 
 
     def get_preparation(self, recipe):
