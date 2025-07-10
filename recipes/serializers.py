@@ -5,6 +5,7 @@ from tag.models import Tag
 from .models import Recipe
 from collections import defaultdict
 from attr import attr
+from authors.validators import AuthorRecipeValidator
 
 
 class TagSerializers(serializers.ModelSerializer):
@@ -17,7 +18,12 @@ class TagSerializers(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ['id', 'title', 'description', 'public', 'author', 'category', 'tags', 'preparation', 'category_name', 'tag_objects', 'tag_links',]
+        fields = [
+            'id', 'title', 'description', 'public', 'author', 'category', 'tags',
+            'preparation', 'category_name', 'tag_objects', 'tag_links', 'preparation_time', 
+            'preparation_time_unit', 'servings', 'servings_unit', 
+            'preparation_steps', 'cover',
+        ]
 
     public = serializers.BooleanField(
         source='is_published',
@@ -54,25 +60,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         super_validate = super().validate(attrs)
 
-        title = attrs.get('title')
-        description = attrs.get('description')
-
-        if title == description:
-            raise serializers.ValidationError(
-                {
-                    "title": ["Posso", "ter", "mais de um erro"],
-                    "description": ["Posso", "ter", "mais de um erro"],
-                }
-            )
+        AuthorRecipeValidator(data=attrs, ErrorClass=serializers.ValidationError,)
 
         return super_validate
-    
-    # metodo validate_field para validar dados
-    def validate_title(self, value):
-        title = value
-
-        if len(title) < 5:
-            raise serializers.ValidationError('Must have at least 5 chars.')
-
-        return title
     
