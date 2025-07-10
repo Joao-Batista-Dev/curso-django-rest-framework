@@ -58,6 +58,12 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     # metodo validate para validar dados
     def validate(self, attrs):
+        if self.instance is not None and attrs.get('servings') is None:
+            attrs['servings'] = self.instance.servings
+
+        if self.instance is not None and attrs.get('preparations_time') is None:
+            attrs['preparations_time'] = self.instance.preparations_time
+
         super_validate = super().validate(attrs)
 
         AuthorRecipeValidator(data=attrs, ErrorClass=serializers.ValidationError,)
