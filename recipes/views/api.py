@@ -7,7 +7,7 @@ from tag.models import Tag
 from ..serializers import TagSerializers
 from rest_framework import status # importando status code HTTP no  DRF
 from rest_framework.views import APIView # importando minha CLASS BASED VIEWS
-from rest_framework.generics import ListCreateAPIView # importando CLASS BASED VIEW GENERICS
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView # importando CLASS BASED VIEW GENERICS
 from rest_framework.pagination import PageNumberPagination
 
 
@@ -51,27 +51,16 @@ class RecipeApiv2List(ListCreateAPIView):
     '''
 
 
-class RecipeApiv2Detail(APIView):
-    def get_recipe(self, pk):
-        recipe = get_object_or_404(
-            Recipe.objects.get_published(),
-            pk=pk
-        )
-        return recipe
+class RecipeApiv2Detail(RetrieveUpdateDestroyAPIView):
+    queryset = Recipe.objects.get_published()
+    serializer_class = RecipeSerializer
+    pagination_class = RecipeAPIv2Pagination
 
-    def get(self, request, pk):
-        recipe = self.get_recipe(pk)
-        serializer = RecipeSerializer(
-            instance=recipe, 
-            many=False,
-            context={
-                'request': request,
-            },
-        )
-        return Response(serializer.data)
 
-    def patch(self, request, pk):
-        recipe = self.get_recipe(pk)
+    def patch(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        recipe = self.get_queryset().filter(pk=pk).first()
+
         serializer = RecipeSerializer(
             instance=recipe, 
             data=request.data,
@@ -86,12 +75,6 @@ class RecipeApiv2Detail(APIView):
         serializer.save()
 
         return Response(serializer.data,)
-
-    def delete(self, request, pk):
-        recipe = self.get_recipe(pk)
-        recipe.delete()
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view() 

@@ -61,8 +61,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         if self.instance is not None and attrs.get('servings') is None:
             attrs['servings'] = self.instance.servings
 
-        if self.instance is not None and attrs.get('preparations_time') is None:
-            attrs['preparations_time'] = self.instance.preparations_time
+        if self.instance is not None and attrs.get('preparation_time') is None:
+            attrs['preparation_time'] = self.instance.preparation_time
 
         super_validate = super().validate(attrs)
 
