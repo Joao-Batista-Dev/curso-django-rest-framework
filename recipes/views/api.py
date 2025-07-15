@@ -7,9 +7,20 @@ from tag.models import Tag
 from ..serializers import TagSerializers
 from rest_framework import status # importando status code HTTP no  DRF
 from rest_framework.views import APIView # importando minha CLASS BASED VIEWS
+from rest_framework.generics import ListCreateAPIView # importando CLASS BASED VIEW GENERICS
+from rest_framework.pagination import PageNumberPagination
 
 
-class RecipeApiv2List(APIView):
+class RecipeAPIv2Pagination(PageNumberPagination):
+    page_size = 2
+
+
+class RecipeApiv2List(ListCreateAPIView):
+    queryset = Recipe.objects.get_published()
+    serializer_class = RecipeSerializer
+    pagination_class = RecipeAPIv2Pagination
+
+    '''
     def get(self, request):
         recipes = Recipe.objects.get_published()[:10]
         serializer = RecipeSerializer(
@@ -37,6 +48,7 @@ class RecipeApiv2List(APIView):
         )
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    '''
 
 
 class RecipeApiv2Detail(APIView):

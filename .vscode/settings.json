@@ -1,6 +1,6 @@
 {
   "window.zoomLevel": 2,
-  "editor.fontSize": 24,
+  "editor.fontSize": 14,
   "python.languageServer": "Pylance", // ms-python.vscode-pylance
   "python.testing.unittestEnabled": false, // ms-python.python
   "python.testing.pytestEnabled": true,
@@ -57,5 +57,6 @@
     "django-html": "html", // batisteo.vscode-django
     "javascript": "javascriptreact",
     "typescript": "typescriptreact"
-  }
+  },
+  "files.autoSave": "afterDelay"
 }
