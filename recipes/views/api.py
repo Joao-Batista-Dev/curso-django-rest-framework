@@ -9,49 +9,14 @@ from rest_framework import status # importando status code HTTP no  DRF
 from rest_framework.views import APIView # importando minha CLASS BASED VIEWS
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView # importando CLASS BASED VIEW GENERICS
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.viewsets import ModelViewSet # criando viewset 
 
 
 class RecipeAPIv2Pagination(PageNumberPagination):
     page_size = 2
 
 
-class RecipeApiv2List(ListCreateAPIView):
-    queryset = Recipe.objects.get_published()
-    serializer_class = RecipeSerializer
-    pagination_class = RecipeAPIv2Pagination
-
-    '''
-    def get(self, request):
-        recipes = Recipe.objects.get_published()[:10]
-        serializer = RecipeSerializer(
-            instance=recipes, 
-            many=True,
-            context={
-                'request': request,
-            },
-        )
-
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = RecipeSerializer(
-            data=request.data,
-            context={
-                'request': request,
-            },
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save(
-            author_id = 1, 
-            category_id = 1,
-            tags=[1, 2],
-        )
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    '''
-
-
-class RecipeApiv2Detail(RetrieveUpdateDestroyAPIView):
+class RecipeApiv2ViewSet(ModelViewSet):
     queryset = Recipe.objects.get_published()
     serializer_class = RecipeSerializer
     pagination_class = RecipeAPIv2Pagination
