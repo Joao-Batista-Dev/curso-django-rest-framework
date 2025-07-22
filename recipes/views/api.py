@@ -10,7 +10,8 @@ from rest_framework.views import APIView # importando minha CLASS BASED VIEWS
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView # importando CLASS BASED VIEW GENERICS
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ModelViewSet # criando viewset 
-from rest_framework.permissions import IsAuthenticated # importando nossa autenticacao
+from rest_framework.permissions import IsAuthenticatedOrReadOnly # importando nossa autenticacao
+from ..permissions import IsOwner # importando minha autenticacao modificada
 
 
 class RecipeAPIv2Pagination(PageNumberPagination):
@@ -21,12 +22,32 @@ class RecipeApiv2ViewSet(ModelViewSet):
     queryset = Recipe.objects.get_published()
     serializer_class = RecipeSerializer
     pagination_class = RecipeAPIv2Pagination
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [IsAuthenticatedOrReadOnly,]
 
+    def get_object(self):
+        pk = self.kwargs.get('pk', '')
+
+        obj = get_object_or_404(
+            self.get_queryset(),
+            pk=pk,
+        )
+
+        self.check_object_permissions(self.request, obj)
+
+    # usando minha permissao criada
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'DELETE']:
+            return [IsOwner(), ]
+        return super().get_permissions()
+
+    def list(self, request, *args, **kwargs):
+        print('REQUEST', request.user)
+        print(request.user.is_authenticated)
+        return super().list(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
-        recipe = self.get_queryset().filter(pk=pk).first()
+        recipe = self.get_object()
 
         serializer = RecipeSerializer(
             instance=recipe, 
