@@ -7,7 +7,6 @@ from tag.models import Tag
 from ..serializers import TagSerializers
 from rest_framework import status # importando status code HTTP no  DRF
 from rest_framework.views import APIView # importando minha CLASS BASED VIEWS
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView # importando CLASS BASED VIEW GENERICS
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ModelViewSet # criando viewset 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly # importando nossa autenticacao
@@ -23,6 +22,7 @@ class RecipeApiv2ViewSet(ModelViewSet):
     serializer_class = RecipeSerializer
     pagination_class = RecipeAPIv2Pagination
     permission_classes = [IsAuthenticatedOrReadOnly,]
+    http_method_names = ['get', 'options', 'head', 'post', 'delete']
 
     def get_object(self):
         pk = self.kwargs.get('pk', '')
