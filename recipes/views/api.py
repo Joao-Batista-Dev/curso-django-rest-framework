@@ -1,16 +1,16 @@
 from rest_framework.decorators import api_view # importando um decoreto - para decorar minha api views
 from rest_framework.response import Response # importando uma resposta do django rest framework
-from ..models import Recipe
-from ..serializers import RecipeSerializer
+from recipes.models import Recipe
+from recipes.serializers import RecipeSerializer
 from django.shortcuts import get_object_or_404
 from tag.models import Tag
-from ..serializers import TagSerializers
+from recipes.serializers import TagSerializers
 from rest_framework import status # importando status code HTTP no  DRF
 from rest_framework.views import APIView # importando minha CLASS BASED VIEWS
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ModelViewSet # criando viewset 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly # importando nossa autenticacao
-from ..permissions import IsOwner # importando minha autenticacao modificada
+from recipes.permissions import IsOwner # importando minha autenticacao modificada
 
 
 class RecipeAPIv2Pagination(PageNumberPagination):
@@ -41,8 +41,6 @@ class RecipeApiv2ViewSet(ModelViewSet):
         return super().get_permissions()
 
     def list(self, request, *args, **kwargs):
-        print('REQUEST', request.user)
-        print(request.user.is_authenticated)
         return super().list(request, *args, **kwargs)
     
     def create(self, request, *args, **kwargs): # POST
