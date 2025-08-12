@@ -13,8 +13,9 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly # importando no
 from recipes.permissions import IsOwner # importando minha autenticacao modificada
 
 
+
 class RecipeAPIv2Pagination(PageNumberPagination):
-    page_size = 2
+    page_size = 3
 
 
 class RecipeApiv2ViewSet(ModelViewSet):
